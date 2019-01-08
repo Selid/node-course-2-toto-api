@@ -121,3 +121,67 @@ describe('DELETE /todos/:id', () => {
             .end(done);
     });
 });
+
+describe('PATCH /todos/:id', () => {
+    it("should update a todo", (done) => {
+        var id = todos[1]._id.toHexString();
+        var updatedTodo = {
+            "completed": true,
+            "text" : "This is done"
+        };
+        request(app).patch(`/todos/${id}`).send(updatedTodo)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.completed).toBe(updatedTodo.completed);
+                expect(res.body.todo.text).toBe(updatedTodo.text);
+                expect(res.body.todo.completedAt).toBeDefined();
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+                Todo.findById(id).then((todo) => {
+                    expect(todo.completed).toBe(updatedTodo.completed);
+                    expect(todo.text).toBe(updatedTodo.text);
+                    expect(todo.completedAt).toBeDefined();
+                    done();
+                });
+            });
+    });
+
+    it("should clear completedAt when completed become false", (done) => {
+        var id = todos[1]._id.toHexString();
+        var updatedTodo = {
+            "completed": false
+        };
+        request(app).patch(`/todos/${id}`).send(updatedTodo)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.completed).toBe(updatedTodo.completed);
+                expect(res.body.todo.completedAt).toBeNull();
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err);
+                }
+                Todo.findById(id).then((todo) => {
+                    expect(todo.completed).toBe(updatedTodo.completed);
+                    expect(todo.completedAt).toBeNull();
+                    done();
+                });
+            });
+    });
+
+    it("should send a 404", (done) => {
+        var id = new ObjectId().toHexString();
+        request(app).patch(`/todos/${id}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it("should return a 400", (done) => {
+        request(app).patch(`/todos/123`)
+            .expect(400)
+            .end(done);
+    });
+});
