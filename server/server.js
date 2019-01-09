@@ -91,16 +91,14 @@ app.post('/users', (req, res) => {
     var user = new User(_.pick(req.body, ['email', 'password', 'tokens']));
     user.save().then(() => {
         return user.generateAuthToken();
-    }, (err) => {
+    }).then((token) => {
+        res.header('x-auth', token).send(user)
+    }).catch((err) => {
         if (err.code === 11000) {
             res.status(400).send("Email already exists");   
         } else{
             res.status(400).send("Could not create user");
         }
-    }).then((token) => {
-        res.header('x-auth', token).send(user)
-    }).catch((e) => {
-        res.status(400).send(e);
     });
 });
 
