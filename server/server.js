@@ -8,7 +8,7 @@ const _ = require('lodash');
 var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 var {Todo} = require('./models/todo');
-var {authenticate, login} = require('./middleware/authenticate');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 const port = process.env.PORT;
