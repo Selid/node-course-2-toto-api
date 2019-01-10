@@ -15,11 +15,6 @@ var authenticate = (req, res, next) => {
     });
 }
 
-var login = (password, hashed) => {
-    return bcrypt.compare(password, hashed);
-}
-
 module.exports = {
-    authenticate,
-    login
+    authenticate
 };
