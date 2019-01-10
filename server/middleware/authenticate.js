@@ -1,4 +1,5 @@
 var {User} = require('../models/user');
+var bcrypt = require('bcryptjs');
 
 var authenticate = (req, res, next) => {
     var token = req.header('x-auth');
@@ -14,4 +15,11 @@ var authenticate = (req, res, next) => {
     });
 }
 
-module.exports.authenticate = authenticate;
+var login = (password, hashed) => {
+    return bcrypt.compare(password, hashed);
+}
+
+module.exports = {
+    authenticate,
+    login
+};
